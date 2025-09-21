@@ -1,25 +1,12 @@
 import {themes as prismThemes} from 'prism-react-renderer';
 import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
+import {config as dotenvconfig}  from "dotenv";
+
+dotenvconfig();
 
 /* TODO: change to read configuration from environment */
-const blogEnabled = false
-
-const moreColumn = {
-  title: 'More',
-  items: [
-    {
-      label: 'GitHub',
-      href: 'https://github.com/spmse',
-    },
-  ],
-}
-if (blogEnabled) {
-  moreColumn.items.push({
-    label: 'Blog',
-    href: '/blog',
-  })
-}
+const blogEnabled = Boolean(process.env.BLOG_ENABLED === 'true')
 
 const config: Config = {
   title: 'DSO Live Demo Docs',
@@ -27,17 +14,17 @@ const config: Config = {
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
-  url: 'https://your-docusaurus-site.example.com',
+  url: process.env.DEPLOYMENT_URL ?? "https://spmse.github.io",
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/dev-blog-template/',
+  baseUrl: process.env.BASE_URL ?? "/",
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'spmse', // Usually your GitHub org/user name.
-  projectName: 'dso-dev-blog', // Usually your repo name.
+  organizationName: process.env.GITHUB_ORG, // Usually your GitHub org/user name.
+  projectName: process.env.GITHUB_PROJECT, // Usually your repo name.
 
-  deploymentBranch: 'main',
+  deploymentBranch: process.env.DEPLOYMENT_BRANCH,
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
@@ -101,7 +88,6 @@ const config: Config = {
           position: 'left',
           label: 'Docs',
         },
-        // {to: '/blog', label: 'Blog', position: 'left'},
         {
           href: 'https://github.com/spmse/dev-blog-template',
           label: 'Github',
@@ -138,22 +124,17 @@ const config: Config = {
             },
           ],
         },
-        moreColumn
-        // {
-        //   title: 'More',
-        //   items: [
-        //     {
-        //       label: 'GitHub',
-        //       href: 'https://github.com/facebook/docusaurus',
-        //     },
-        //     blogEnabled && {
-        //       label: 'Blog',
-        //       to: '/blog',
-        //     },
-        //   ],
-        // },
+        {
+          title: 'More',
+          items: [
+            {
+              label: 'GitHub',
+              href: 'https://github.com/facebook/docusaurus',
+            }
+          ],
+        },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Sven Patrick Meier (spmse). Built with Docusaurus and 💚.`,
     },
     prism: {
       theme: prismThemes.github,
@@ -174,5 +155,11 @@ const config: Config = {
     },
   } satisfies Preset.ThemeConfig,
 };
+
+
+if (blogEnabled) {
+  (config.themeConfig.navbar as any).items.push({to: '/blog', label: 'Blog', position: 'left'});
+  (config.themeConfig.footer as any).links[2].items.push({to: '/blog', label: 'Blog'});
+}
 
 export default config;
