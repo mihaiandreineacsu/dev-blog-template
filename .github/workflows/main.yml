@@ -19,8 +19,14 @@ jobs:
   create-or-update-pr:
     name: Create or update PR
     uses: ./.github/workflows/create-pr.yaml
+    if: ${{ github.ref != github.event.repository.default_branch }}
 
   build-and-deploy-to-pages:
     name: Build website and deploy to GitHub Pages
     needs: create-or-update-pr
-    uses: ./.github/workflows/deploy.yaml
+    uses: ./.github/workflows/deploy-github-pages.yaml
+
+  build-and-deploy-to-nginx:
+    name: Build website and deploy to Nginx
+    needs: create-or-update-pr
+    uses: ./.github/workflows/deploy-nginx.yaml
